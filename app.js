@@ -90,7 +90,7 @@ const getNmgWr = (callback) => {
 }
 
 const seeMyHistory = username => {
-    const myMessages = chatHistory.filter(message => message.user === username)
+    const myMessages = chatHistory.filter(message => message.user === username && message.message[0] !== '!')
     if (!myMessages){
         return 'No message history'
     }
