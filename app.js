@@ -1,6 +1,7 @@
 const tmi = require('tmi.js')
 const fs = require('fs')
 const commands = require('./commands.js')
+const spotify = require('./spotify')
 
 require('dotenv').config()
 
@@ -23,6 +24,12 @@ if (!chatHistory.length){
 }
 
 chatHistory = JSON.parse(chatHistory)
+
+// On startup and every 50 minutes, get a new access token for Spotify
+spotify.getAccessToken()
+setInterval(() => {
+    spotify.getAccessToken()
+}, 3000000)
 
 const onMessageHandler = (target, context, message, self) => {
     if (self) { return }

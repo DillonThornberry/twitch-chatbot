@@ -1,4 +1,5 @@
 const utils = require('./utils.js')
+const spotify = require('./spotify')
 
 const ban = (callback, info) => {
     callback((info.extra || info.context.username) + ' is officially banned for life')
@@ -68,6 +69,10 @@ const test = callback => {
     callback('test')
 }
 
+const testspotify = callback => {
+    spotify.test(callback)
+}
+
 const uptime = callback => {
     utils.getUptime(callback)
 }
@@ -88,6 +93,7 @@ module.exports = {
     shoutout,
     squad,
     test,
+    testspotify,
     uptime,
     wr,
 }
