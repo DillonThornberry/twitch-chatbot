@@ -4,8 +4,24 @@ const ban = (callback, info) => {
     callback((info.extra || info.context.username) + ' is officially banned for life')
 }
 
+const commands = (callback, info) => {
+    if (utils.checkCredentials(info.context, 'mod')){
+        return callback(Object.keys(module.exports).reduce((a,c) => a + c + ', ', ''))
+    }
+    callback('Mobile: see "info" tab | Desktop: scroll down')
+}
+
 const follow = callback => {
     callback('Follow this channel if you like to party')
+}
+
+const followage = (callback, info) => {
+    utils.getFollowage(info.context.username, followTime => {
+        if (!followTime){
+            return follow(callback)
+        }
+        callback(info.context.username + ' has been following for ' + followTime)
+    })
 }
 
 const history = (callback, info, history) => {
@@ -52,14 +68,20 @@ const test = callback => {
     callback('test')
 }
 
+const uptime = callback => {
+    //utils.getUptime()
+    //callback('Live for ' + utils.getUptime())
+}
+
 const wr = callback => {
-    //console.log('wr called')
     utils.getNmgWr(callback)
 }
 
 module.exports = {
     ban,
+    commands,
     follow,
+    followage,
     history,
     hypno,
     moan,
@@ -67,5 +89,6 @@ module.exports = {
     shoutout,
     squad,
     test,
+    uptime,
     wr,
 }

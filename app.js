@@ -21,29 +21,26 @@ var chatHistory = fs.readFileSync('chat-history.json', 'utf-8')
 if (!chatHistory.length){
     process.exit(1)
 }
-chatHistory = JSON.parse(chatHistory)
 
-//console.log(chatHistory)
-//console.log(JSON.parse(chatHistory))
+chatHistory = JSON.parse(chatHistory)
 
 const onMessageHandler = (target, context, message, self) => {
     if (self) { return }
 
     if (message[0] === '!'){
         var parsedMessage = message.slice(1).split(' ')
-        var command = parsedMessage[0]
+        var command = parsedMessage[0].toLowerCase()
         console.log(command)
         if (commands[command]) {
             commands[command](
                 response => client.say(target, response), 
                 {context, extra: parsedMessage.slice(1).join(' ')},
                 chatHistory
-                )
+            )
         }
     }
 
     var newMessage = {message: message, user: context.username, time: new Date()}
-    //console.log(typeof chatHistory)
     chatHistory.push(newMessage)
     fs.writeFile('chat-history.json', JSON.stringify(chatHistory), () => console.log('message saved'))
 

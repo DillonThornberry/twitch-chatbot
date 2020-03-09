@@ -32,6 +32,37 @@ const getTimeStr = time => {
     return minutes + ':' + seconds
 }
 
+const getFollowage = (username, callback) => {
+    let followersUrl = "https://api.twitch.tv/helix/users/follows?to_id=" + process.env.MY_CHANNEL_ID
+    getUserId(username, id => {
+        followersUrl += "&from_id=" + id
+        request({ url: followersUrl, headers: { "Client-ID": process.env.TWITCH_CLIENT_ID }, json: true }, (err, res) => {
+            if (!res.body.data.length){
+                return callback(null)
+            }
+            callback(getTimeDifference(new Date(res.body.data[0].followed_at)))
+        })
+    })
+}
+
+const getTimeDifference = date => {
+    var diffInSeconds = Math.floor((new Date() - date) / 1000)
+    const days = Math.floor(diffInSeconds / 86400)
+    diffInSeconds -= days * 86400
+    const hours = Math.floor(diffInSeconds / 3600)
+    diffInSeconds -= hours * 3600
+    const minutes = Math.floor(diffInSeconds / 60)
+    var dayString = days ? days + ' day' + (days > 1 ? 's' : '') + ', ' : ''
+    return `${dayString}${hours} hour${hours > 1 ? 's' : ''}, and ${minutes} minute${minutes > 1 ? 's' : ''}`
+}
+
+const getUserId = (username, callback) => {
+    const getUserUrl = "https://api.twitch.tv/helix/users?login=" + username
+    request({ url: getUserUrl, headers: { "Client-ID": process.env.TWITCH_CLIENT_ID }, json: true }, (err, res) => {
+        callback(res.body.data[0].id)
+    })
+}
+
 const seeMyHistory = (username, chatHistory) => {
     const myMessages = chatHistory.filter(chat => chat.user === username && chat.message[0] !== '!')
     if (!myMessages){
@@ -43,5 +74,6 @@ const seeMyHistory = (username, chatHistory) => {
 module.exports = {
     checkCredentials,
     getNmgWr,
+    getFollowage,
     seeMyHistory
 }
