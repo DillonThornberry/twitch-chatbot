@@ -52,8 +52,18 @@ const getTimeDifference = date => {
     const hours = Math.floor(diffInSeconds / 3600)
     diffInSeconds -= hours * 3600
     const minutes = Math.floor(diffInSeconds / 60)
-    var dayString = days ? days + ' day' + (days > 1 ? 's' : '') + ', ' : ''
-    return `${dayString}${hours} hour${hours > 1 ? 's' : ''}, and ${minutes} minute${minutes > 1 ? 's' : ''}`
+    var dayString = days ? days + ' day' + (days !== 1 ? 's' : '') + ', ' : ''
+    return `${dayString}${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes > 1 ? 's' : ''}`
+}
+
+const getUptime = callback => {
+    const getStreamUrl = "https://api.twitch.tv/helix/streams?user_id=" + process.env.MY_CHANNEL_ID 
+    request({ url: getStreamUrl, headers: {"Client-ID": process.env.TWITCH_CLIENT_ID }, json: true }, (err, res) => {
+        if (!res.body.data.length){
+            return callback("we ain't even live!")
+        }
+        callback(getTimeDifference(new Date(res.body.data[0].started_at)))
+    })
 }
 
 const getUserId = (username, callback) => {
@@ -74,6 +84,7 @@ const seeMyHistory = (username, chatHistory) => {
 module.exports = {
     checkCredentials,
     getNmgWr,
+    getUptime,
     getFollowage,
     seeMyHistory
 }

@@ -69,8 +69,7 @@ const test = callback => {
 }
 
 const uptime = callback => {
-    //utils.getUptime()
-    //callback('Live for ' + utils.getUptime())
+    utils.getUptime(callback)
 }
 
 const wr = callback => {
