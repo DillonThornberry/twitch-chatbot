@@ -15,7 +15,7 @@ const addToQueue = (uri, callback) => {
         url: 'https://api.spotify.com/v1/me/player/queue?uri=' + uri,
         headers: { 'Authorization': 'Bearer ' + accessToken },
         json: true
-      };
+    }
 
     request.post(options, (err, res) => {
         if (err || res.statusCode == '404' || res.statusCode == '403'){
@@ -61,6 +61,36 @@ const getAccessToken = () => {
     })
 }
 
+const getCurrentTrack = callback => {
+    var options = {
+        url: 'https://api.spotify.com/v1/me/player',
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        json: true
+    }
+
+    request(options, (err, res) => {
+        callback(res.body)
+    })
+}
+
+const skipTrack = callback => {
+    getCurrentTrack(playInfo => {
+        if (!playInfo.is_playing){
+            return callback('Can\'t skip while music is paused')
+        }
+
+        var options = {
+            url: 'https://api.spotify.com/v1/me/player/next',
+            headers: { 'Authorization': 'Bearer ' + accessToken },
+            json: true
+        }
+    
+        request.post(options, (err, res) => {
+            callback('Song skipped')
+        })
+    })
+}
+
 const validUri = str => {
     if (str.startsWith('spotify:track:')){
         return str
@@ -95,5 +125,7 @@ const test = (callback) => {
 module.exports = {
     addToQueue,
     getAccessToken,
+    getCurrentTrack,
+    skipTrack,
     test
 }

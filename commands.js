@@ -44,6 +44,12 @@ const moan = callback => {
     callback('oooooh yeeeeeaaah so nice! mmmmmmmmmmmmm')
 }
 
+const nowplaying = callback => {
+    spotify.getCurrentTrack(playInfo => {
+        callback(`Now playing: ${playInfo.item.name} by ${playInfo.item.artists[0].name}`)
+    })
+}
+
 const rules = callback => {
     callback('No spamming and no talking shit on anyone but the streamer')
 }
@@ -57,13 +63,19 @@ const shoutout = (callback, info) => {
     callback('Shoutout to ' + (info.extra || 'that guy') + ' for following!')
 }
 
+const skipsong = (callback, info) => {
+    if (utils.checkCredentials(info.context, 'mod')){
+        spotify.skipTrack(callback)
+    }  
+}
+
 const songrequest = (callback, info) => {
     spotify.addToQueue(info.extra, callback)
 }
 
 const squad = callback => {
     const homies = ['FTSN_Nation: twitch.tv/ftsn_nation', 'HypnoticRL: youtube.com/u/hypnoticrl']
-    callback('Follow the squad:')
+    callback('Follow the squad - ')
     for (var homie of homies){
         callback(homie)
     }
@@ -93,8 +105,10 @@ module.exports = {
     history,
     hypno,
     moan,
+    nowplaying,
     rules,
     shoutout,
+    skipsong,
     songrequest,
     squad,
     test,
