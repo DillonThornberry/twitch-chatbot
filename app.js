@@ -17,6 +17,7 @@ const opts = {
 
 const client = new tmi.client(opts)
 
+// Load chat history from json and store in an array
 var chatHistory = fs.readFileSync('chat-history.json', 'utf-8')
 
 if (!chatHistory.length){
@@ -34,6 +35,7 @@ setInterval(() => {
 const onMessageHandler = (target, context, message, self) => {
     if (self) { return }
 
+    // If message is a command, call that command
     if (message[0] === '!'){
         var parsedMessage = message.slice(1).split(' ')
         var command = parsedMessage[0].toLowerCase()
@@ -46,7 +48,7 @@ const onMessageHandler = (target, context, message, self) => {
             )
         }
     }
-
+    // Create a message object and push it into the chat history array, then store the array to json
     var newMessage = {message: message, user: context.username, time: new Date()}
     chatHistory.push(newMessage)
     fs.writeFile('chat-history.json', JSON.stringify(chatHistory), () => console.log('message saved'))

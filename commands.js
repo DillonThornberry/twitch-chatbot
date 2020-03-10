@@ -57,6 +57,10 @@ const shoutout = (callback, info) => {
     callback('Shoutout to ' + (info.extra || 'that guy') + ' for following!')
 }
 
+const songrequest = (callback, info) => {
+    spotify.addToQueue(info.extra, callback)
+}
+
 const squad = callback => {
     const homies = ['FTSN_Nation: twitch.tv/ftsn_nation', 'HypnoticRL: youtube.com/u/hypnoticrl']
     callback('Follow the squad:')
@@ -91,6 +95,7 @@ module.exports = {
     moan,
     rules,
     shoutout,
+    songrequest,
     squad,
     test,
     testspotify,
