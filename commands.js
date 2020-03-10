@@ -30,7 +30,17 @@ const history = (callback, info, history) => {
         var user = info.extra[0] === '@' ? info.extra.slice(1) : info.extra
         return callback(utils.seeMyHistory(user, history) || `no history to show for ${user}`)
     }
-    callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+
+    if (utils.checkCredentials(info.context, 'mod')){
+        return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+    } else {
+        utils.getFollowage(info.context.username, followage => {
+            if (followage){
+                return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+            }
+        })
+    }
+    
 }
 
 const hypno = (callback, info) => {
@@ -70,7 +80,15 @@ const skipsong = (callback, info) => {
 }
 
 const songrequest = (callback, info) => {
-    spotify.addToQueue(info.extra, callback)
+    if (utils.checkCredentials(info.context, 'mod')){
+        console.log(info.context)
+        return spotify.addToQueue(info.extra, callback)
+    }
+    utils.getFollowage(info.context.username, followage => {
+        if (followage){
+            return spotify.addToQueue(info.extra, callback)
+        }
+    })
 }
 
 const squad = callback => {

@@ -3,7 +3,7 @@ const request = require('request')
 require('dotenv').config()
 
 const checkCredentials = (context, option) => {
-    if (option === 'mod' && (!context.mod && !context.badges.broadcaster)){
+    if (option === 'mod' && (!context.mod && !context.badges)){
         return false
     }
     return true

@@ -8,7 +8,7 @@ var accessToken = null
 const addToQueue = (uri, callback) => {
     var uri = validUri(uri)
     if (!uri.length){
-        callback('Not a valid Spotify URL or URI')
+        return callback('Not a valid Spotify URL or URI')
     }
     
     var options = {
