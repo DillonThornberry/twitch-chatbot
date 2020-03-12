@@ -6,19 +6,24 @@ require('dotenv').config()
 var accessToken = null
 
 const addToQueue = (uri, callback) => {
-    var uri = validUri(uri)
     if (!uri.length){
         return callback('Not a valid Spotify URL or URI')
     }
+    var vUri = validUri(uri)
+    if (!vUri.length){
+        return searchSong(uri,  newUri => {
+            addToQueue(newUri, callback)
+        })
+    }
     
     var options = {
-        url: 'https://api.spotify.com/v1/me/player/queue?uri=' + uri,
+        url: 'https://api.spotify.com/v1/me/player/queue?uri=' + vUri,
         headers: { 'Authorization': 'Bearer ' + accessToken },
         json: true
     }
 
     request.post(options, (err, res) => {
-        if (err || res.statusCode == '404' || res.statusCode == '403'){
+        if (err || res.statusCode === '404' || res.statusCode === '403'){
             return callback('Song request failed')
         }
         options.url = 'https://api.spotify.com/v1/tracks/' + uri.split('track:')[1]
@@ -71,6 +76,23 @@ const getCurrentTrack = callback => {
     request(options, (err, res) => {
         callback(res.body)
     })
+}
+
+const searchSong = (query, callback) => {
+    var options = {
+        url: 'https://api.spotify.com/v1/search?type=track&q=' + encodeURI(query),
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        json: true
+    }
+
+    request(options, (err, res) => {
+        if (!res.body.tracks.items.length){
+            return callback('')
+        } else {
+            return callback(res.body.tracks.items[0].uri)
+        }
+    })
+
 }
 
 const skipTrack = callback => {

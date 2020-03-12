@@ -36,4 +36,4 @@ const chatsByUser = () => {
 }
 
 console.log(commandsByUsage())
-//console.log(chatsByUser())
+console.log(chatsByUser())

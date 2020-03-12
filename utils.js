@@ -26,12 +26,6 @@ const getNmgWr = (callback) => {
     })
 }
 
-const getTimeStr = time => {
-    var minutes = time.split('M')[0].split('T')[1]
-    var seconds = time.split('M')[1].split('S')[0]
-    return minutes + ':' + seconds
-}
-
 const getFollowage = (username, callback) => {
     let followersUrl = "https://api.twitch.tv/helix/users/follows?to_id=" + process.env.MY_CHANNEL_ID
     getUserId(username, id => {
@@ -54,6 +48,12 @@ const getTimeDifference = date => {
     const minutes = Math.floor(diffInSeconds / 60)
     var dayString = days ? days + ' day' + (days !== 1 ? 's' : '') + ', ' : ''
     return `${dayString}${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes > 1 ? 's' : ''}`
+}
+
+const getTimeStr = time => {
+    var minutes = time.split('M')[0].split('T')[1]
+    var seconds = time.split('M')[1].split('S')[0]
+    return minutes + ':' + seconds
 }
 
 const getUptime = callback => {

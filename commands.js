@@ -12,6 +12,10 @@ const commands = (callback, info) => {
     callback('Mobile: see "info" tab | Desktop: scroll down')
 }
 
+const discord = callback => {
+    callback('Join our discord: ' + 'https://discord.gg/DsJtaSR')
+}
+
 const follow = callback => {
     callback('Follow this channel if you like to party')
 }
@@ -28,18 +32,20 @@ const followage = (callback, info) => {
 const history = (callback, info, history) => {
     if (utils.checkCredentials(info.context, 'mod') && info.extra){
         var user = info.extra[0] === '@' ? info.extra.slice(1) : info.extra
-        return callback(utils.seeMyHistory(user, history) || `no history to show for ${user}`)
+        return callback(utils.seeMyHistory(user.toLowerCase(), history) || `no history to show for ${user}`)
     }
 
-    if (utils.checkCredentials(info.context, 'mod')){
-        return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
-    } else {
-        utils.getFollowage(info.context.username, followage => {
-            if (followage){
-                return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
-            }
-        })
-    }
+    return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+
+    // if (utils.checkCredentials(info.context, 'mod')){
+    //     return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+    // } else {
+    //     utils.getFollowage(info.context.username, followage => {
+    //         if (followage){
+    //             return callback(utils.seeMyHistory(info.context.username, history) || 'you have no chat history')
+    //         }
+    //     })
+    // }
     
 }
 
@@ -81,7 +87,6 @@ const skipsong = (callback, info) => {
 
 const songrequest = (callback, info) => {
     if (utils.checkCredentials(info.context, 'mod')){
-        console.log(info.context)
         return spotify.addToQueue(info.extra, callback)
     }
     utils.getFollowage(info.context.username, followage => {
@@ -92,7 +97,7 @@ const songrequest = (callback, info) => {
 }
 
 const squad = callback => {
-    const homies = ['FTSN_Nation: twitch.tv/ftsn_nation', 'HypnoticRL: youtube.com/u/hypnoticrl']
+    const homies = ['FTSN_Nation: twitch.tv/ftsn_nation', 'HypnoticRL: youtube.com/c/hypnoticrl']
     callback('Follow the squad - ')
     for (var homie of homies){
         callback(homie)
@@ -118,6 +123,7 @@ const wr = callback => {
 module.exports = {
     ban,
     commands,
+    discord,
     follow,
     followage,
     history,
