@@ -1,6 +1,7 @@
 const utils = require('./utils.js')
 const spotify = require('./spotify')
 
+
 const ban = (callback, info) => {
     callback((info.extra || info.context.username) + ' is officially banned for life')
 }

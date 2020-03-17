@@ -20,11 +20,16 @@ const client = new tmi.client(opts)
 // Load chat history from json and store in an array
 var chatHistory = fs.readFileSync('chat-history.json', 'utf-8')
 
+var infectedPeople = fs.readFileSync('infected-people.json', 'utf8')
+var isInfected = false
+var contagious = null
+
 if (!chatHistory.length){
     process.exit(1)
 }
 
 chatHistory = JSON.parse(chatHistory)
+infectedPeople = infectedPeople.length ? JSON.parse(infectedPeople) : []
 
 // On startup and every 50 minutes, get a new access token for Spotify
 spotify.getAccessToken()
@@ -48,11 +53,50 @@ const onMessageHandler = (target, context, message, self) => {
             )
         }
     }
+
+    if (infectedPeople.includes(context.username)){
+        chatRoomInfectedBy(context.username)
+    }
+
+    if (isInfected && !infectedPeople.includes(context.username)){
+        client.say(target, newInfected(context.username, contagious))
+        client.say(target, 'There are currently ' + infectedPeople.length + ' infected people in this chat')
+    }
+
+    if((/corona/gi.test(message) || /virus/gi.test(message)) && !infectedPeople.includes(context.username)){
+        client.say(target, newInfected(context.username))
+        client.say(target, 'There are currently ' + infectedPeople.length + ' infected people in this chat')
+    }
+
+    console.log(infectedPeople)
     // Create a message object and push it into the chat history array, then store the array to json
     var newMessage = {message: message, user: context.username, time: new Date()}
     chatHistory.push(newMessage)
     fs.writeFile('chat-history.json', JSON.stringify(chatHistory), () => console.log('message saved'))
 
+}
+
+const chatRoomInfectedBy = username => {
+    isInfected = true
+    contagious = username
+    console.log('infection started at ' + new Date())
+    setTimeout(() => {
+        if (contagious === username){
+            console.log('infection ended at ' + new Date())
+            isInfected = false
+            contagious = null
+        }
+        
+    }, 30000)
+}
+
+const newInfected = (infected, infector) => {
+    infectedPeople.push(infected)
+    fs.writeFile('infected-people.json', JSON.stringify(infectedPeople), () => {
+        console.log('infected people updated')
+    })
+    chatRoomInfectedBy(infected)
+    return infected + ' caught the coronavirus' + (infector ? ' from ' + infector : '')
 }
 
 client.on('message', onMessageHandler)
